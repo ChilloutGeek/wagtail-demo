@@ -9,10 +9,11 @@
 
     <div class="intro">{{ page.intro|richtext }}</div>
 
-    {% for post in blogpages %}
+    {% for post in bloglists %}
+    {% with post=post.specific %}
         <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
-        {{ post.specific.intro }}
-        {{ post.specific.body|richtext }}
+        {{ post.intro }}
+        {{ post.body|richtext }}
     {% endfor %}
 
 {% endblock %}

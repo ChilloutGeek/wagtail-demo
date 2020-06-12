@@ -14,10 +14,9 @@ class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
     
     def get_context(self, request):
-        # Update context to include only published posts, ordered by reverse-chron
         context = super().get_context(request)
-        blogpages = self.get_children().live().order_by('-first_published_at')
-        context['blogpages'] = blogpages
+        bloglists = self.get_children().live().order_by('-first_published_at')
+        context['bloglists'] = bloglists
         return context    
 
     content_panels = Page.content_panels + [
@@ -40,17 +39,23 @@ class BlogPage(Page):
         FieldPanel('body', classname="full"),
         InlinePanel('gallery_images', label="Gallery images"),
     ]
-
-class BlogGallery(Page):
+class Picture(models.Model):
     
-    page = ParentalKey(BlogPage, blank=True, null=True, on_delete=models.PROTECT, related_name='gallery_images')
     image = models.ForeignKey(
         'wagtailimages.Image', blank=True, null=True, on_delete=models.SET_NULL, related_name='+'
     )
-    
-    caption = models.CharField(blank=True, max_length=250)
 
     panels = [
         ImageChooserPanel('image'),
+    ]
+
+
+class BlogGalleryPage(Picture):
+    
+    page = ParentalKey('BlogPage', blank=True, null=True, on_delete=models.SET_NULL, related_name='gallery_images')
+
+    caption = models.CharField(blank=True, max_length=250)
+
+    panels = [
         FieldPanel('caption'),
     ]
